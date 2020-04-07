@@ -4,7 +4,8 @@ export class Question {
   constructor(
     public id: question.ID,
     public imageURL: string,
-  ) {}
+  ) {
+  }
 }
 
 function verifyThatIndicesMatch(qb: QuestionBank) {
@@ -179,25 +180,37 @@ export class QuestionBank {
   }
 }
 
-export const questionBank = new QuestionBank([
-  {
-    id: question.ELEPHANT,
-    imageURL: "./media/slon.jpeg",
-  },
-  {
-    id: question.TIGER,
-    imageURL: "./media/tigar.jpeg",
-  },
-  {
-    id: question.LION,
-    imageURL: "./media/lav.jpeg",
-  },
-  {
-    id: question.DOG,
-    imageURL: "./media/pas.jpeg",
-  },
-]);
+export function initializeQuestionBank(): QuestionBank {
+  const result = new QuestionBank([
+    {
+      id: question.ELEPHANT,
+      imageURL: "./media/slon.jpeg",
+    },
+    {
+      id: question.TIGER,
+      imageURL: "./media/tigar.jpeg",
+    },
+    {
+      id: question.LION,
+      imageURL: "./media/lav.jpeg",
+    },
+    {
+      id: question.DOG,
+      imageURL: "./media/pas.jpeg",
+    },
+  ]);
+
+  if (result.questions.length === 0) {
+    throw Error("Unexpected an empty question bank.")
+  }
+  return result;
+}
 
 export function compareAnswers(expected: string, got: string): boolean {
   return expected.toLowerCase() === got.toLowerCase();
+}
+
+const instance = initializeQuestionBank();
+export function get(): QuestionBank {
+  return instance;
 }
