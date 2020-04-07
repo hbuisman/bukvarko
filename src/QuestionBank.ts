@@ -1,10 +1,9 @@
-export type QuestionID = string;
+import * as question from "./question";
 
 export class Question {
   constructor(
-    public id: QuestionID,
+    public id: question.ID,
     public imageURL: string,
-    public expectedAnswer: string
   ) {}
 }
 
@@ -24,9 +23,9 @@ function verifyThatPreviousLoopsThrough(qb: QuestionBank) {
     throw Error("Unexpected empty question bank");
   }
 
-  const loop = new Array<QuestionID>(qb.questions.length + 1);
+  const loop = new Array<question.ID>(qb.questions.length + 1);
 
-  let cursor: QuestionID = qb.questions[0].id;
+  let cursor: question.ID = qb.questions[0].id;
   for (let i = 0; i < qb.questions.length + 1; i++) {
     const prev = qb.previous(cursor);
     loop[i] = cursor;
@@ -51,9 +50,9 @@ function verifyThatNextLoopsThrough(qb: QuestionBank) {
     throw Error("Unexpected empty question bank");
   }
 
-  const loop = new Array<QuestionID>(qb.questions.length + 1);
+  const loop = new Array<question.ID>(qb.questions.length + 1);
 
-  let cursor: QuestionID = qb.questions[0].id;
+  let cursor: question.ID = qb.questions[0].id;
   for (let i = 0; i < qb.questions.length + 1; i++) {
     const next = qb.next(cursor);
     loop[i] = cursor;
@@ -99,18 +98,18 @@ function verifyQuestionBank(qb: QuestionBank) {
 }
 
 export class QuestionBank {
-  private questionIndex: Map<QuestionID, number>;
-  private questionMap: Map<QuestionID, Question>;
-  private previousMap: Map<QuestionID, QuestionID>;
-  private nextMap: Map<QuestionID, QuestionID>;
+  private questionIndex: Map<question.ID, number>;
+  private questionMap: Map<question.ID, Question>;
+  private previousMap: Map<question.ID, question.ID>;
+  private nextMap: Map<question.ID, question.ID>;
 
   constructor(public questions: Array<Question>) {
-    this.questionIndex = new Map<QuestionID, number>();
+    this.questionIndex = new Map<question.ID, number>();
     for (const [i, q] of questions.entries()) {
       this.questionIndex.set(q.id, i);
     }
 
-    this.questionMap = new Map<QuestionID, Question>();
+    this.questionMap = new Map<question.ID, Question>();
     for (const q of questions) {
       if (this.questionMap.has(q.id)) {
         throw Error(`Duplicate ID in questions: ${q.id}`);
@@ -118,7 +117,7 @@ export class QuestionBank {
       this.questionMap.set(q.id, q);
     }
 
-    this.previousMap = new Map<QuestionID, QuestionID>();
+    this.previousMap = new Map<question.ID, question.ID>();
     if (questions.length > 0) {
       this.previousMap.set(questions[0].id, questions[questions.length - 1].id);
 
@@ -127,7 +126,7 @@ export class QuestionBank {
       }
     }
 
-    this.nextMap = new Map<QuestionID, QuestionID>();
+    this.nextMap = new Map<question.ID, question.ID>();
     if (questions.length > 0) {
       this.nextMap.set(questions[questions.length - 1].id, questions[0].id);
 
@@ -139,7 +138,7 @@ export class QuestionBank {
     verifyQuestionBank(this);
   }
 
-  public index(id: QuestionID): number {
+  public index(id: question.ID): number {
     const result = this.questionIndex.get(id);
     if (result === undefined) {
       throw Error(`Question ID is invalid: ${id}`);
@@ -148,7 +147,7 @@ export class QuestionBank {
     return result;
   }
 
-  public next(id: QuestionID): QuestionID {
+  public next(id: question.ID): question.ID {
     const result = this.nextMap.get(id);
     if (result === undefined) {
       throw Error(`Question ID is invalid: ${id}`);
@@ -157,7 +156,7 @@ export class QuestionBank {
     return result;
   }
 
-  public previous(id: QuestionID): QuestionID {
+  public previous(id: question.ID): question.ID {
     const result = this.previousMap.get(id);
     if (result === undefined) {
       throw Error(`Question ID is invalid: ${id}`);
@@ -166,11 +165,11 @@ export class QuestionBank {
     return result;
   }
 
-  public has(id: QuestionID): boolean {
+  public has(id: question.ID): boolean {
     return this.questionMap.has(id);
   }
 
-  public get(id: QuestionID): Question {
+  public get(id: question.ID): Question {
     const result = this.questionMap.get(id);
     if (result === undefined) {
       throw Error(`Question ID is invalid: ${id}`);
@@ -182,24 +181,20 @@ export class QuestionBank {
 
 export const questionBank = new QuestionBank([
   {
-    id: "slon",
+    id: question.ELEPHANT,
     imageURL: "./media/slon.jpeg",
-    expectedAnswer: "slon",
   },
   {
-    id: "tigar",
+    id: question.TIGER,
     imageURL: "./media/tigar.jpeg",
-    expectedAnswer: "tigar",
   },
   {
-    id: "lav",
+    id: question.LION,
     imageURL: "./media/lav.jpeg",
-    expectedAnswer: "lav",
   },
   {
-    id: "pas",
+    id: question.DOG,
     imageURL: "./media/pas.jpeg",
-    expectedAnswer: "pas",
   },
 ]);
 
